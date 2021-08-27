@@ -1,0 +1,44 @@
+{
+  "expo": {
+    "name": "Trueque",
+    "slug": "Trueque",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/logo.png",
+    "splash": {
+      "image": "./assets/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.condorsoft.trueque",
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.condorsoft.trueque",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDS-tP13IQjcNda6R6ADN9hgPfqP0wn5hc"
+        }
+      },
+      "permissions": [
+        "CAMERA_ROLL",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "description": "App Trueque"
+  }
+}
