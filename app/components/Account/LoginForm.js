@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {StyleSheet, View} from "react-native";
-import {Input, Icon, Button} from "react-native-elements";
+import {Input, Icon, Button, Text} from "react-native-elements";
 import { isEmpty } from "lodash";
 import {validateEmail} from "../../utils/validations";
 import * as firebase from "firebase";
@@ -18,26 +18,27 @@ export default function LoginForm(props){
         setFormData({ ...formData,  [type]: e.nativeEvent.text });
     }
     
+    const goForgot = () => {
+        navigation.navigate("forgot");
+    }
+
     const onSubmit = () => {
         if(isEmpty(formData.email) || isEmpty(formData.password)){
             toastRef.current.show("Todos los campos son obligatorios.");
         }else if(!validateEmail(formData.email)){
             toastRef.current.show("Email no es correcto.");
         }else{
-            setLoading(true);
-            setTimeout(() => {
-                firebase
-                    .auth()
-                    .signInWithEmailAndPassword(formData.email, formData.password)
-                    .then(() => {
-                        setLoading(false);
-                        navigation.navigate("account");
-                    })
-                    .catch(() => {
-                        setLoading(false);
-                        toastRef.current.show("Email o contraseña incorrecta.");
-                    });
-            }, 3000);
+            firebase
+            .auth()
+            .signInWithEmailAndPassword(formData.email, formData.password)
+            .then(() => {
+                setLoading(false);
+                navigation.navigate("account");
+            })
+            .catch(() => {
+                setLoading(false);
+                toastRef.current.show("Email o contraseña incorrecta.");
+            });
         }
     }
 
@@ -71,7 +72,9 @@ export default function LoginForm(props){
                 containerStyle={styles.btnContainerLogin}
                 buttonStyle={styles.btnLogin}
                 onPress={onSubmit}/>
-            <Loading loading={loading} text="Iniciando sesión..."/>
+            {//<Loading loading={loading} text="Iniciando sesión..."/>
+            }
+            <Text style={styles.texto} onPress={goForgot}>Olvidaste tu contraseña?</Text>
         </View>
     );
 }
@@ -89,6 +92,12 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         marginTop: 30
+    },
+    texto: {
+        color: "#000",
+        fontSize: 14,
+        marginTop: 40,
+        textAlign: 'center',
     },
     inputForm: {
         width: "100%",

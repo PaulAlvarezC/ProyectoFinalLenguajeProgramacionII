@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "Trueque",
-    "slug": "Trueque",
+    "name": "Dear",
+    "slug": "Dear",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/logo.png",
+    "icon": "./assets/logoDear.png",
     "splash": {
-      "image": "./assets/logo.png",
+      "image": "./assets/splashDear.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,15 +17,12 @@
       "**/*"
     ],
     "ios": {
-      "bundleIdentifier": "com.condorsoft.trueque",
+      "bundleIdentifier": "com.itq.dear",
       "supportsTablet": true
     },
     "android": {
-      "package": "com.condorsoft.trueque",
+      "package": "com.itq.dear",
       "config": {
-        "googleMaps": {
-          "apiKey": "AIzaSyDS-tP13IQjcNda6R6ADN9hgPfqP0wn5hc"
-        }
       },
       "permissions": [
         "CAMERA_ROLL",
@@ -39,6 +36,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "description": "App Trueque"
+    "description": "App Dear"
   }
 }

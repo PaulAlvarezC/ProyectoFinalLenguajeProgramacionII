@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { Icon, Button } from "react-native-elements";
 import firebase from "firebase";
 
 export default function Home(props){
     const { navigation } = props;
     const [userLogged, setUserLogged] = useState(false);
-    
+
+
     firebase.auth().onAuthStateChanged((user) => {
         user ? setUserLogged(true) : setUserLogged(false);
     });
@@ -15,9 +16,22 @@ export default function Home(props){
         return <UserNoLogged navigation={navigation} />;
     }
 
+    const goCreate = () => {
+      navigation.navigate('create', {
+        navigation: navigation,
+      });
+    }
+
     return(
-        <View>
-            <Text>Inicio</Text>
+        <View style={styles.viewBody}>
+            <Icon
+              reverse
+              type="material-community"
+              name="plus"
+              color="#21ACFC"
+              containerStyle={styles.btnContainer}
+              onPress={goCreate}
+            />
         </View>
     );
 }
@@ -40,3 +54,21 @@ function UserNoLogged(props) {
       </View>
     );
   }
+
+  const styles = StyleSheet.create({
+    viewBody: {
+      flex: 1,
+      flexDirection: "row",
+      backgroundColor: "#fff",
+      alignItems: "center",
+      justifyContent: "center",
+    },
+    btnContainer: {
+      position: "absolute",
+      bottom: 10,
+      right: 10,
+      shadowColor: "black",
+      shadowOffset: { width: 2, height: 2 },
+      shadowOpacity: 0.5,
+    },
+  });

@@ -8,11 +8,8 @@ export default function Loading(props){
     return(
         <>
             {
-                loading ? (
-                    <BounceLoader color={"#21ACFC"} loading={loading} size={50} />
-                ): (
-                    <></>
-                )
+
+            //<BounceLoader color={"#21ACFC"} loading={loading} size={50} />
             }
         </>
     );

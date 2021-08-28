@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
     },
     btn: {
         backgroundColor: "#21ACFC",
-        borderRadius: 60,
-        height: 50,
+        borderRadius: 10,
+        height: 60,
     }
 });

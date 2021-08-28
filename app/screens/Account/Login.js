@@ -8,7 +8,7 @@ export default function Login() {
     const toastRef = useRef();
     return (
         <ScrollView>
-            <Image source={require("../../../assets/logo.png")}
+            <Image source={require("../../../assets/logoDear.png")}
                 resizeMode="contain"
                 style={styles.logo}
             />

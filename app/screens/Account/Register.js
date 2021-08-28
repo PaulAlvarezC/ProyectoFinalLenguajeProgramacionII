@@ -8,7 +8,7 @@ export default function(){
     const toastRef = useRef();
     return(
         <KeyboardAwareScrollView>
-            <Image source={require("../../../assets/logo.png")}
+            <Image source={require("../../../assets/logoDear.png")}
             resizeMode="contain"
             style={styles.logo}/>
             <View style={styles.viewForm}>

@@ -8,7 +8,7 @@ export default function UserGuest(){
 
     return(
         <ScrollView centerContent={true} style={styles.viewBody}>
-            <Image source={require("../../../assets/logo.png")}
+            <Image source={require("../../../assets/logoDear.png")}
             resizeMode="contain"
             style={styles.image}/>
             <View style={styles.viewBtn}>
