@@ -2,13 +2,18 @@ import React, { useState } from "react";
 import { View, Text } from "react-native";
 import { Icon, Button } from "react-native-elements";
 import firebase from "firebase";
+import LettersList from '../../components/Letters/LettersList';
 
 export default function Letters(props){
     const { navigation } = props;
     const [userLogged, setUserLogged] = useState(false);
+    const [userId, setUserId] = useState(false);
     
     firebase.auth().onAuthStateChanged((user) => {
         user ? setUserLogged(true) : setUserLogged(false);
+        if(user){
+          setUserId(user.uid);
+        }
     });
 
     if (!userLogged) {
@@ -17,7 +22,7 @@ export default function Letters(props){
 
     return(
         <View>
-            <Text>Mis Cartas</Text>
+            <LettersList userId={userId}/>
         </View>
     );
 }

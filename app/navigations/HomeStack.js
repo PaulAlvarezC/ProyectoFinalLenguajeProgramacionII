@@ -2,6 +2,7 @@ import React from 'react';
 import { createStackNavigator} from "@react-navigation/stack";
 import Home from "../screens/Home/Home";
 import Create from "../screens/Home/Create";
+import Template from "../screens/Home/Template";
 import Cat1 from "../screens/Letters/Cat1";
 import Cat2 from "../screens/Letters/Cat2";
 import Cat3 from "../screens/Letters/Cat3";
@@ -17,10 +18,14 @@ export default function HomeStack(){
                 options={{ title: "Inicio", headerShown: true,}}
             />
             <Stack.Screen
+                name="template"
+                component={Template}
+                options={{ title: "Crear Evento"}}/>
+            <Stack.Screen
                 name="create"
                 component={Create}
-                options={{ title: "Crear Carta"}}/>
-                <Stack.Screen
+                options={{ title: "Crear Evento"}}/>
+            <Stack.Screen
                 name="categoria1"
                 component={Cat1}
                 options={{ title: "Navidad" }} />

@@ -1,11 +1,24 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { Icon, Button } from "react-native-elements";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { Icon } from "react-native-elements";
+import { Avatar, Button, Card, Paragraph } from 'react-native-paper';
 import firebase from "firebase";
+
+const LeftContent = props => <Avatar.Icon {...props} icon="book-outline" color="#FFF" style={{backgroundColor: "#21ACFC"}}/>
 
 export default function Home(props){
     const { navigation } = props;
     const [userLogged, setUserLogged] = useState(false);
+
+    const goCat1 = () => {
+      navigation.navigate("categoria1");
+    }
+    const goCat2 = () => {
+        navigation.navigate("categoria2");
+    }
+    const goCat3 = () => {
+        navigation.navigate("categoria3");
+    }
 
 
     firebase.auth().onAuthStateChanged((user) => {
@@ -23,6 +36,41 @@ export default function Home(props){
     }
 
     return(
+      <>
+        <ScrollView vertical>
+            <Card>
+                <Card.Title title="Navidad" subtitle="" left={LeftContent} />
+                <Card.Content>
+                    <Paragraph>Escribele a Santa y dile como te has portado.</Paragraph>
+                </Card.Content>
+                <Card.Cover source={require('../../../assets/navidad.jpg')} />
+                <Card.Actions>
+                    <Button onPress={goCat1}>Crear</Button>
+                </Card.Actions>
+            </Card>
+
+            <Card>
+                <Card.Title title="Cumpleaños" subtitle="" left={LeftContent} />
+                <Card.Content>
+                    <Paragraph>Escribe y envia tus mejores deseos a un familiar o amigo por su cumpleaños.</Paragraph>
+                </Card.Content>
+                <Card.Cover source={require('../../../assets/cumpleanos.jpg')} />
+                <Card.Actions>
+                    <Button onPress={goCat2}>Crear</Button>
+                </Card.Actions>
+            </Card>
+
+            <Card>
+                <Card.Title title="San Valentin" subtitle="" left={LeftContent} />
+                <Card.Content>
+                    <Paragraph>Expresa tu amor a tu crush a traves de una carta!</Paragraph>
+                </Card.Content>
+                <Card.Cover source={require('../../../assets/sanvalentin.jpg')} />
+                <Card.Actions>
+                    <Button onPress={goCat3}>Crear</Button>
+                </Card.Actions>
+            </Card>
+        </ScrollView>
         <View style={styles.viewBody}>
             <Icon
               reverse
@@ -33,6 +81,7 @@ export default function Home(props){
               onPress={goCreate}
             />
         </View>
+      </>
     );
 }
 
