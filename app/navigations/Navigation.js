@@ -18,12 +18,12 @@ export default function Navigation(){
             <Tab.Navigator 
                 initialRouteName="home"
                 tabBarOptions={{
-                    inactiveTintColor: "#fff",
-                    activeTintColor: "#000",
-                    activeBackgroundColor:"#21ACFC",
+                    inactiveTintColor: "#000",
+                    activeTintColor: "#21ACFC",
+                    activeBackgroundColor:"#fff",
                     style: {
                         padding: 4,
-                        backgroundColor: '#21ACFC'
+                        backgroundColor: '#fff'
                     }
                 }}
                 screenOptions={({route }) => ({
@@ -38,7 +38,7 @@ export default function Navigation(){
                 <Tab.Screen 
                     name="letters" 
                     component={LettersStack}
-                    options={{ title: "Mis Tarjetas"}}
+                    options={{ title: "Mis Cartas"}}
                 />
                 <Tab.Screen 
                     name="account" 
@@ -55,13 +55,13 @@ function screenOptions(route, color){
 
     switch(route.name){
         case "home":
-            iconName = "home"
+            iconName = "home-variant-outline"
             break;
         case "letters":
-            iconName = "anchor"
+            iconName = "book-outline"
             break;
         case "account":
-            iconName = "account"
+            iconName = "account-circle-outline"
                 break;
         default:
             break;

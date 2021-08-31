@@ -10,7 +10,7 @@ export default function LettersStack() {
             <Stack.Screen
                 name="letters"
                 component={Letters}
-                options={{ title: "Mis Tarjetas", headerShown: true, }}
+                options={{ title: "Mis Cartas", headerShown: true, }}
             />
         </Stack.Navigator>
     );
