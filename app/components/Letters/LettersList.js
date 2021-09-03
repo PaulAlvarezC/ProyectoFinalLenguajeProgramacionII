@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { ScrollView } from "react-native";
-import { Button } from 'react-native-elements';
+import { Button, Text } from 'react-native-elements';
+import { useFocusEffect } from "@react-navigation/native";
 import { Avatar, Card, Paragraph, Dialog, Portal, Provider, } from 'react-native-paper';
 import * as firebase from "firebase";
 import "firebase/firestore";
@@ -11,31 +12,41 @@ const LeftContent = props => <Avatar.Icon {...props} size={50} icon="book-outlin
 const db = firebase.firestore(firebaseApp);
 
 export default function LettersList(props) {
-    const { userId } = props;
-    const [letters, setLetters] = React.useState([]);
-    const [visible, setVisible] = React.useState(false);
+    const [letters, setLetters] = useState([]);
+    const [visible, setVisible] = useState(false);
+    const [totalLetters, setTotalLetters] = useState(0);
 
-    React.useEffect(() => {
-        const letterList = [];
-
-        db.collection("letters")
-            .where("userId", "==", userId)
-            .get()
-            .then(function (querySnapshot) {
-                querySnapshot.forEach(function (doc) {
-                    letterList.push(doc.data());
+    useFocusEffect(
+        useCallback(() => {
+            db.collection("letters")
+                .where("userId", "==", firebase.auth().currentUser.uid)
+                .get()
+                .then((snap) => {
+                    setTotalLetters(snap.size);
                 });
-                console.log(letterList);
-                setLetters(letterList);
-            })
-            .catch(function (error) {
-                console.log("Error getting userInfo: ", error);
-            });
-    }, []);
+
+            const letterList = [];
+
+            db.collection("letters")
+                .where("userId", "==", firebase.auth().currentUser.uid)
+                .get()
+                .then((response) => {
+                    response.forEach((doc) => {
+                        const letter = doc.data();
+                        letterList.push(letter);
+                    });
+                    setLetters(letterList);
+                });
+        }, [])
+    );
 
     const deleteLetter = () => {
         console.log('Eliminando');
         setVisible(false);
+    }
+
+    const showLetter = (id) => {
+        console.log('Abrir Carta ', id);
     }
 
     const showDialog = () => setVisible(true);
@@ -46,37 +57,54 @@ export default function LettersList(props) {
         <>
             <ScrollView vertical style={{ backgroundColor: '#FFF' }}>
                 <Provider>
-
-                {
-                    letters.map(t =>
-                        <Card key={t.letterId}>
-                            <Card.Title title={t.title} subtitle="" left={LeftContent} />
-                            <Card.Content>
-                                <Paragraph style={{ fontWeight: 'bold' }}>{t.createAt}</Paragraph>
-                            </Card.Content>
-                            <Card.Cover source={require('../../../assets/navidad.jpg')} />
-                            <Card.Actions>
-                                <Button
-                                    icon={{
-                                        name: 'delete',
-                                        type: 'material-community',
-                                        size: 20,
-                                        color: 'white',
-                                    }}
-                                    buttonStyle={{
-                                        backgroundColor: '#21ACFC',
-                                        borderColor: 'transparent',
-                                        borderWidth: 0,
-                                        borderRadius: 80,
-                                        width: 45,
-                                        height: 45,
-                                    }}
-                                    onPress={showDialog}
-                                />
-                            </Card.Actions>
-                        </Card>
-                    )
-                }
+                    <Text style={{ margin: 5, padding: 5, }}>Cantidad: {totalLetters}</Text>
+                    {
+                        letters.map(t =>
+                            <Card key={t.letterId}>
+                                <Card.Title title={t.title} subtitle={t.createAt} style={{backgroundColor: "#21ACFC",}}/>
+                                <Card.Content>
+                                </Card.Content>
+                                <Card.Cover source={require('../../../assets/navidad.jpg')} />
+                                <Card.Actions>
+                                    <Button
+                                        icon={{
+                                            name: 'delete',
+                                            type: 'material-community',
+                                            size: 20,
+                                            color: 'white',
+                                        }}
+                                        buttonStyle={{
+                                            backgroundColor: '#21ACFC',
+                                            borderColor: 'transparent',
+                                            borderWidth: 0,
+                                            borderRadius: 80,
+                                            width: 45,
+                                            height: 45,
+                                        }}
+                                        onPress={showDialog}
+                                    />
+                                    <Button
+                                        icon={{
+                                            name: 'eye',
+                                            type: 'material-community',
+                                            size: 20,
+                                            color: 'white',
+                                        }}
+                                        buttonStyle={{
+                                            backgroundColor: '#21ACFC',
+                                            borderColor: 'transparent',
+                                            borderWidth: 0,
+                                            borderRadius: 80,
+                                            width: 45,
+                                            height: 45,
+                                            marginLeft: 10,
+                                        }}
+                                        onPress={() => showLetter(t.letterId)}
+                                    />
+                                </Card.Actions>
+                            </Card>
+                        )
+                    }
 
                     <Portal>
                         <Dialog visible={visible} onDismiss={hideDialog}>
@@ -101,7 +129,7 @@ export default function LettersList(props) {
                                         height: 45,
                                     }}
                                     onPress={hideDialog}
-                                    style={{marginRight: 5,}}
+                                    style={{ marginRight: 5, }}
                                 />
                                 <Button
                                     icon={{

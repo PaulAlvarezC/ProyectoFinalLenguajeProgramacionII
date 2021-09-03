@@ -7,7 +7,7 @@ import * as ImagePicker from 'expo-image-picker';
 
 export default function InfoUser(props){
     const { 
-        userInfo: { uid, photoURL, displayName, email, phone}, 
+        userInfo: { uid, photoURL, displayName, email}, 
         toastRef,
         setLoading, setLoadingText,
     } = props;
