@@ -1,20 +1,26 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { ScrollView } from "react-native";
 import { Button, Text } from 'react-native-elements';
 import { useFocusEffect } from "@react-navigation/native";
-import { Avatar, Card, Paragraph, Dialog, Portal, Provider, } from 'react-native-paper';
+import { Card, Paragraph, Dialog, Portal, Provider, } from 'react-native-paper';
 import * as firebase from "firebase";
+import { useNavigation } from "@react-navigation/native";
 import "firebase/firestore";
 import { firebaseApp } from "../../utils/firebase";
-
-const LeftContent = props => <Avatar.Icon {...props} size={50} icon="book-outline" color="#FFF" style={{ backgroundColor: "#21ACFC" }} />
+import fondo1 from '../../../assets/navidad.jpg';
+import fondo2 from '../../../assets/cumpleanos.jpg';
+import fondo3 from '../../../assets/sanvalentin.jpg';
+import fondo4 from '../../../assets/default.jpg';
 
 const db = firebase.firestore(firebaseApp);
 
 export default function LettersList(props) {
     const [letters, setLetters] = useState([]);
+    const [letterId, setLetterId] = useState(null);
     const [visible, setVisible] = useState(false);
     const [totalLetters, setTotalLetters] = useState(0);
+    const navigation = useNavigation();
+    const toastRef = useRef();
 
     useFocusEffect(
         useCallback(() => {
@@ -29,6 +35,7 @@ export default function LettersList(props) {
 
             db.collection("letters")
                 .where("userId", "==", firebase.auth().currentUser.uid)
+                //.orderBy("createAt")
                 .get()
                 .then((response) => {
                     response.forEach((doc) => {
@@ -41,15 +48,38 @@ export default function LettersList(props) {
     );
 
     const deleteLetter = () => {
-        console.log('Eliminando');
-        setVisible(false);
+        console.log('Eliminando', letterId); 
+        db.collection("letters")
+        .where("letterId", "==", letterId)
+        .get()
+        .then((response) => {
+            response.forEach((doc) => {
+                const id = doc.id;
+                db.collection("letters")
+                    .doc(id)
+                    .delete()
+                    .then(() => {
+                        setVisible(false);
+                        navigation.navigate("home");
+                        toastRef.current.show("Carta eliminada correctamente!");
+                    })
+                    .catch(() => {
+                        setVisible(false);
+                        toastRef.current.show("Error al eliminar la carta!");
+                    });
+            });
+        });
+
     }
 
     const showLetter = (id) => {
         console.log('Abrir Carta ', id);
     }
 
-    const showDialog = () => setVisible(true);
+    const showDialog = (id) => {
+        setVisible(true);
+        setLetterId(id);
+    }
 
     const hideDialog = () => setVisible(false);
 
@@ -61,10 +91,8 @@ export default function LettersList(props) {
                     {
                         letters.map(t =>
                             <Card key={t.letterId}>
-                                <Card.Title title={t.title} subtitle={t.createAt} style={{backgroundColor: "#21ACFC",}}/>
-                                <Card.Content>
-                                </Card.Content>
-                                <Card.Cover source={require('../../../assets/navidad.jpg')} />
+                                <Card.Title title={t.title} subtitle={t.createAt} style={{backgroundColor: t.type === 1 ? "#21ACFC" : (t.type === 2 ? "#F4F73E" : (t.type === 3 ? "#E6361D" : "#3AA91E"))}}/>
+                                <Card.Cover source={t.type === 1 ? fondo1 : (t.type === 2 ? fondo2 : (t.type === 3 ? fondo3 : fondo4))} />
                                 <Card.Actions>
                                     <Button
                                         icon={{
@@ -81,7 +109,7 @@ export default function LettersList(props) {
                                             width: 45,
                                             height: 45,
                                         }}
-                                        onPress={showDialog}
+                                        onPress={()=> showDialog(t.letterId)}
                                     />
                                     <Button
                                         icon={{

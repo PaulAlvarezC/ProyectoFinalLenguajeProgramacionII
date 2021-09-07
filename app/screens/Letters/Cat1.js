@@ -1,12 +1,14 @@
 import React from "react";
-import { View, ImageBackground, StyleSheet, TextInput, Text, Button } from "react-native";
-import { Input, Icon } from 'react-native-elements';
+import { View, ImageBackground, StyleSheet, TextInput } from "react-native";
+import { Input } from 'react-native-elements';
+//import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
+//import {PanGestureHandler,PanGestureHandlerGestureEvent,} from 'react-native-gesture-handler';
+import { FAB, Portal, Provider } from 'react-native-paper';
 import frameChrismas from '../../../assets/frameChrismas.jpg';
-import Modal from "react-native-modal";
 import Toast from "react-native-easy-toast";
-import {useNavigation} from "@react-navigation/native";
-import {isEmpty} from 'lodash';
-import {fullDate, validateEmail} from '../../utils/validations';
+import { useNavigation } from "@react-navigation/native";
+import { isEmpty } from 'lodash';
+import { fullDate, validateEmail } from '../../utils/validations';
 import { firebaseApp } from "../../utils/firebase";
 import firebase from "firebase/app";
 import "firebase/firestore";
@@ -19,12 +21,31 @@ export default function Cat1() {
     const [isModalVisible, setModalVisible] = React.useState(false);
     const [userId, setUserId] = React.useState(false);
     const navigation = useNavigation();
+    const [state, setState] = React.useState({ open: false });
+
+    const onStateChange = ({ open }) => setState({ open });
+
+    const { open } = state;
 
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
             setUserId(user.uid);
         }
     });
+
+    //const translateX = useSharedValue(0);
+    //const translateY = useSharedValue(0);
+
+    /*const panGestureEvent = useAnimatedGestureHandler < PanGestureHandlerGestureEvent > ({
+        onStart: (event) => {
+            //context.translateX = translateX.value
+        },
+        onActive: (event) => {
+            translateX.value = event.translationX;
+            translateY.value = event.translationY;
+        },
+        onEnd: (event) => { },
+    })*/
 
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
@@ -38,14 +59,31 @@ export default function Cat1() {
         setModalVisible(true);
     }
 
+    const addSquare = (x, y) => {
+        console.log('Add Square: ', x, y);
+    }
+
+    /*const rStyle = useAnimatedStyle(() => {
+        return {
+            transform: [
+                {
+                    translateX: translateX.value,
+                },
+                {
+                    translateY: translateY.value,
+                },
+            ],
+        };
+    });*/
+
     const save = () => {
-        if(isEmpty(formData.title)){
+        if (isEmpty(formData.title)) {
             toastRef.current.show("Debes agregar el título de tu carta!", 4000);
-        } else if(isEmpty(formData.message)){
+        } else if (isEmpty(formData.message)) {
             toastRef.current.show("Debes agregar el contenido del mensaje!", 4000);
-        } else if(isEmpty(formData.email)){
+        } else if (isEmpty(formData.email)) {
             toastRef.current.show("Debes agregar el correo electrónico de la persona que deseas que reciba tu carta!", 4000);
-        } else if(!validateEmail(formData.email)){
+        } else if (!validateEmail(formData.email)) {
             toastRef.current.show("Email no es correcto.", 4000);
         } else {
             const letterId = generateLetterId(10);
@@ -59,26 +97,26 @@ export default function Cat1() {
                 createAt: fullDate(),
             };
             db.collection("letters")
-            .doc(letterId)
-            .set(data)
-            .then(() => {
-                toastRef.current.show("Carta creada correctamente", 4000);
-                navigation.navigate("create");
-            })
-            .catch(() => {
-                toastRef.current.show("Ups, algo salio mal!");
-            });              
+                .doc(letterId)
+                .set(data)
+                .then(() => {
+                    toastRef.current.show("Carta creada correctamente", 4000);
+                    navigation.navigate("letters");
+                })
+                .catch(() => {
+                    toastRef.current.show("Ups, algo salio mal!");
+                });
         }
-    } 
+    }
 
     return (
         <View style={styles.container}>
-            <Toast ref={toastRef} position="center" opacity={0.9}/>
+            <Toast ref={toastRef} position="center" opacity={0.9} />
             <ImageBackground source={frameChrismas} resizeMode="cover" style={styles.image}>
                 <Input
                     onChange={e => onChange(e, "title")}
                     containerStyle={styles.inputForm}
-                    placeholder='Título'                    
+                    placeholder='Título'
                 />
                 <TextInput
                     multiline
@@ -94,29 +132,50 @@ export default function Cat1() {
                     labelStyle={styles.labelStyleForm}
                     inputStyle={styles.inputStyleForm}
                 />
-                <Icon
-                    reverse
-                    type="material-community"
-                    name="settings-outline"
-                    color="#21ACFC"
-                    containerStyle={styles.btnContainer}
-                    onPress={openModal}
-                />
-                <Icon
-                    reverse
-                    type="material-community"
-                    name="content-save"
-                    color="#21ACFC"
-                    containerStyle={styles.btnContainer2}
-                    onPress={save}
-                />
-                <Modal isVisible={isModalVisible} style={styles.modal}>
-                    <View>
-                        <Text style={styles.text}>Hello!</Text>
 
-                        <Button title="Hide modal" onPress={toggleModal} />
-                    </View>
-                </Modal>
+                {/*<PanGestureHandler onGestureEvent={panGestureEvent}>
+                    <Animated.View style={[styles.square, rStyle]} />
+                </PanGestureHandler>*/}
+
+
+                <Provider>
+                    <Portal>
+                        <FAB.Group
+                            color={"#FFF"}
+                            fabStyle={{ backgroundColor: "#21ACFC" }}
+                            open={open}
+                            icon={open ? 'close' : 'settings-outline'}
+                            actions={[
+                                {
+                                    icon: 'plus',
+                                    onPress: () => console.log('Pressed add')
+                                },
+                                {
+                                    icon: 'star',
+                                    label: 'Colocar Figúra',
+                                    onPress: () => addSquare(100, 100),
+                                },
+                                {
+                                    icon: 'text',
+                                    label: 'Colocar Texto',
+                                    onPress: () => console.log('Pressed email'),
+                                },
+                                {
+                                    icon: 'content-save',
+                                    label: 'Guardar',
+                                    onPress: () => save(),
+                                    small: false,
+                                },
+                            ]}
+                            onStateChange={onStateChange}
+                            onPress={() => {
+                                if (open) {
+                                    // do something if the speed dial is open
+                                }
+                            }}
+                        />
+                    </Portal>
+                </Provider>
             </ImageBackground>
         </View>
     );
@@ -189,25 +248,28 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 0.5,
     },
-    modal: {
-        backgroundColor: '#FFF',
-        borderRadius: 20,
-    },
     text: {
         textAlign: 'center',
+    },
+    square: {
+        width: 100,
+        height: 100,
+        backgroundColor: 'rgba(0,0,256, 0.5)',
+        borderRadius: 20,
+
     },
 });
 
 function generateLetterId(n) {
     var add = 1, max = 10 - add;
-  
+
     if (n > max) {
         return generateLetterId(max) + generateLetterId(n - max);
     }
-  
+
     max = Math.pow(10, n + add);
     var min = max / 10;
     var number = Math.floor(Math.random() * (max - min + 1)) + min;
-  
+
     return ("" + number).substring(add);
-  }
+}

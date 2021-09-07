@@ -89,7 +89,7 @@ export default function Home(props) {
           )
         }
 
-        <Card>
+        <Card key="1">
           <Card.Title title="Navidad" subtitle="" left={LeftContent} />
           <Card.Content>
             <Paragraph>Escribele a Santa y dile como te has portado.</Paragraph>
@@ -100,7 +100,7 @@ export default function Home(props) {
           </Card.Actions>
         </Card>
 
-        <Card>
+        <Card key="2">
           <Card.Title title="Cumpleaños" subtitle="" left={LeftContent} />
           <Card.Content>
             <Paragraph>Escribe y envia tus mejores deseos a un familiar o amigo por su cumpleaños.</Paragraph>
@@ -111,7 +111,7 @@ export default function Home(props) {
           </Card.Actions>
         </Card>
 
-        <Card>
+        <Card key="3">
           <Card.Title title="San Valentin" subtitle="" left={LeftContent} />
           <Card.Content>
             <Paragraph>Expresa tu amor a tu crush a traves de una carta!</Paragraph>

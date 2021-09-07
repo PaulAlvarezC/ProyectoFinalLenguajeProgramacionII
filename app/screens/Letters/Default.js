@@ -55,7 +55,7 @@ export default function Default() {
                 title: formData.title,
                 email: formData.email.toLocaleLowerCase(),
                 message: formData.message,
-                type: 1,
+                type: 0,
                 createAt: fullDate(),
             };
             db.collection("letters")
@@ -63,7 +63,7 @@ export default function Default() {
             .set(data)
             .then(() => {
                 toastRef.current.show("Carta creada correctamente", 4000);
-                navigation.navigate("create");
+                navigation.navigate("letters");
             })
             .catch(() => {
                 toastRef.current.show("Ups, algo salio mal!");
