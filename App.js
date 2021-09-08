@@ -10,12 +10,16 @@ console.ignoredYellowBox = [
 if(!global.btoa) global.btoa = encode;
 if(!global.atob) global.atob = decode;
 
+console.disableYellowBox = true;
+
 export default function App() {
   YellowBox.ignoreWarnings(['VirtualizedLists should never be nested', 
       'Setting a timer', 
+      'Non-serializable values were found in the navigation state',
       'Animated: `useNativeDriver`',
       'Warning: componentWillReceiveProps has been renamed',
-      'Warning: componentWillMount has been renamed'
+      'Warning: componentWillMount has been renamed',
+      'Warning: perform a react state update on an unmounted component'
   ]);
   return <Navigation/>;
 }

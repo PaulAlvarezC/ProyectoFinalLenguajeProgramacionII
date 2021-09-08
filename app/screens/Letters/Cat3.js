@@ -1,12 +1,13 @@
-import React from "react";
-import { View, ImageBackground, StyleSheet, TextInput } from "react-native";
-import { Input } from 'react-native-elements';
+import React, { useRef } from "react";
+import { View, ImageBackground, StyleSheet, TextInput, Share } from "react-native";
+import { Input, Icon, Image } from 'react-native-elements';
+import ViewShot from "react-native-view-shot";
 import { FAB, Portal, Provider } from 'react-native-paper';
 import frameValentin from '../../../assets/frameValentin.jpg';
 import Toast from "react-native-easy-toast";
-import {useNavigation} from "@react-navigation/native";
-import {isEmpty} from 'lodash';
-import {fullDate, validateEmail} from '../../utils/validations';
+import { useNavigation } from "@react-navigation/native";
+import { isEmpty } from 'lodash';
+import { fullDate, validateEmail } from '../../utils/validations';
 import { firebaseApp } from "../../utils/firebase";
 import firebase from "firebase/app";
 import "firebase/firestore";
@@ -18,8 +19,10 @@ export default function Cat3() {
     const [formData, setFormData] = React.useState(defaultFormValue());
     const [userId, setUserId] = React.useState(false);
     const [state, setState] = React.useState({ open: false });
+    const [figure1, setFigure1] = React.useState(false);
+    const [figure2, setFigure2] = React.useState(false);
     const navigation = useNavigation();
-
+    const viewShotRef = useRef();
     const onStateChange = ({ open }) => setState({ open });
 
     const { open } = state;
@@ -35,13 +38,13 @@ export default function Cat3() {
     }
 
     const save = () => {
-        if(isEmpty(formData.title)){
+        if (isEmpty(formData.title)) {
             toastRef.current.show("Debes agregar el título de tu carta!", 4000);
-        } else if(isEmpty(formData.message)){
+        } else if (isEmpty(formData.message)) {
             toastRef.current.show("Debes agregar el contenido del mensaje!", 4000);
-        } else if(isEmpty(formData.email)){
+        } else if (isEmpty(formData.email)) {
             toastRef.current.show("Debes agregar el correo electrónico de la persona que deseas que reciba tu carta!", 4000);
-        } else if(!validateEmail(formData.email)){
+        } else if (!validateEmail(formData.email)) {
             toastRef.current.show("Email no es correcto.", 4000);
         } else {
             const letterId = generateLetterId(10);
@@ -55,80 +58,146 @@ export default function Cat3() {
                 createAt: fullDate(),
             };
             db.collection("letters")
-            .doc(letterId)
-            .set(data)
-            .then(() => {
-                toastRef.current.show("Carta creada correctamente", 4000);
-                navigation.navigate("letters");
-            })
-            .catch(() => {
-                toastRef.current.show("Ups, algo salio mal!");
-            });              
+                .doc(letterId)
+                .set(data)
+                .then(() => {
+                    toastRef.current.show("Carta creada correctamente", 4000);
+                    navigation.navigate("letters");
+                })
+                .catch(() => {
+                    toastRef.current.show("Ups, algo salio mal!");
+                });
         }
-    } 
+    }
+
+    const captureViewShot = async () => {
+        const imageURI = await viewShotRef.current.capture();
+        Share.share({ title: 'Image', url: imageURI });
+    };
+
+    const sendEmail = async (mail) => {
+        if (isEmpty(mail)) {
+            toastRef.current.show("Debes agregar el correo electrónico de la persona que deseas que reciba tu carta!", 4000);
+        } else if (!validateEmail(mail)) {
+            toastRef.current.show("Email no es correcto.", 4000);
+        } else {
+
+        }
+    };
+
+    const addEmoji1 = () => {
+        if (figure1) {
+            setFigure1(false);
+        } else {
+            setFigure1(true);
+        }
+    }
+
+    const addEmoji2 = () => {
+        if (figure2) {
+            setFigure2(false);
+        } else {
+            setFigure2(true);
+        }
+    };
 
     return (
         <View style={styles.container}>
-            <Toast ref={toastRef} position="center" opacity={0.9}/>
-            <ImageBackground source={frameValentin} resizeMode="cover" style={styles.image}>
+            <Toast ref={toastRef} position="center" opacity={0.9} />
+            <ViewShot ref={viewShotRef} style={{ flex: 1 }} options={{ format: 'jpg', quality: 1.0 }}>
+                <ImageBackground source={frameValentin} resizeMode="cover" style={styles.image}>
+                    <Input
+                        onChange={e => onChange(e, "title")}
+                        containerStyle={styles.inputForm}
+                        placeholder='Título'
+                    />
+                    <TextInput
+                        multiline
+                        numberOfLines={10}
+                        onChange={e => onChange(e, 'message')}
+                        style={styles.inputMultiple}
+                        placeholder='Tu mensaje'
+                    />
+
+                    {
+                        figure1 ? (
+                            <Image
+                                source={require("../../../assets/figure1.png")}
+                                style={{ width: 100, height: 100, marginTop: 80, flex: 1, }}
+                            />
+                        ) : (<></>)
+                    }
+
+                    {
+                        figure2 ? (
+                            <Image
+                                source={require("../../../assets/figure2.png")}
+                                style={{ width: 100, height: 100, marginTop: 100, flex: 1, }}
+                            />
+                        ) : (
+                            <>
+                            </>
+                        )
+                    }
+                    <Provider>
+                        <Portal>
+                            <FAB.Group
+                                color={"#FFF"}
+                                fabStyle={{ backgroundColor: "#21ACFC" }}
+                                open={open}
+                                icon={open ? 'close' : 'settings-outline'}
+                                actions={[
+                                    {
+                                        icon: 'mail',
+                                        label: 'Enviar Correo',
+                                        onPress: () => sendEmail(formData.email),
+                                    },
+                                    {
+                                        icon: 'star',
+                                        label: figure1 ? 'Retirar Emoji 1' : 'Colocar Emoji 1',
+                                        onPress: () => addEmoji1(),
+                                    },
+                                    {
+                                        icon: 'text',
+                                        label: figure2 ? 'Retirar Emoji 2' : 'Colocar Emoji 2',
+                                        onPress: () => addEmoji2(),
+                                    },
+                                    {
+                                        icon: 'content-save',
+                                        label: 'Guardar',
+                                        onPress: () => save(),
+                                        small: false,
+                                    },
+                                ]}
+                                onStateChange={onStateChange}
+                                onPress={() => {
+                                    if (open) {
+                                        // do something if the speed dial is open
+                                    }
+                                }}
+                            />
+                        </Portal>
+                    </Provider>
+                </ImageBackground>
+            </ViewShot>
+            <View style={styles.viewBody}>
                 <Input
-                    onChange={e => onChange(e, "title")}
-                    containerStyle={styles.inputForm}
-                    placeholder='Título'                    
-                />
-                <TextInput
-                    multiline
-                    numberOfLines={10}
-                    onChange={e => onChange(e, 'message')}
-                    style={styles.inputMultiple}
-                    placeholder='Tu mensaje'
-                />
-                <Input
-                    placeholder='Email'
+                    placeholder='Para: (Ingresa el email)'
                     onChange={e => onChange(e, "email")}
-                    containerStyle={styles.containerStyleForm}
+                    containerStyle={styles.emailInputForm}
                     labelStyle={styles.labelStyleForm}
                     inputStyle={styles.inputStyleForm}
                 />
-                <Provider>
-                    <Portal>
-                        <FAB.Group
-                            color={"#FFF"}
-                            fabStyle={{ backgroundColor: "#21ACFC" }}
-                            open={open}
-                            icon={open ? 'close' : 'settings-outline'}
-                            actions={[
-                                {
-                                    icon: 'plus',
-                                    onPress: () => console.log('Pressed add')
-                                },
-                                {
-                                    icon: 'star',
-                                    label: 'Colocar Figúra',
-                                    onPress: () => addSquare(100, 100),
-                                },
-                                {
-                                    icon: 'text',
-                                    label: 'Colocar Texto',
-                                    onPress: () => console.log('Pressed email'),
-                                },
-                                {
-                                    icon: 'content-save',
-                                    label: 'Guardar',
-                                    onPress: () => save(),
-                                    small: false,
-                                },
-                            ]}
-                            onStateChange={onStateChange}
-                            onPress={() => {
-                                if (open) {
-                                    // do something if the speed dial is open
-                                }
-                            }}
-                        />
-                    </Portal>
-                </Provider>
-            </ImageBackground>
+                <Icon
+                    reverse
+                    type="material-community"
+                    name="camera"
+                    color="#21ACFC"
+                    containerStyle={styles.btnContainer}
+                    onPress={captureViewShot}
+                />
+            </View>
+
         </View>
     );
 }
@@ -157,12 +226,11 @@ const styles = StyleSheet.create({
         marginTop: 80,
         marginLeft: 110,
     },
-    containerStyleForm: {
-        //marginTop: -80,
-        padding: 20,
-        width: 250,
-        marginLeft: 10,
-        alignItems: 'center',
+    emailInputForm: {
+        //flex: 1,
+        marginTop: -60,
+        width: 220,
+        marginLeft: 20,
     },
     labelStyleForm: {
         color: '#000',
@@ -187,18 +255,14 @@ const styles = StyleSheet.create({
     btnContainer: {
         position: "absolute",
         bottom: 10,
-        right: 10,
+        right: 80,
         shadowColor: "black",
         shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 0.5,
     },
-    btnContainer2: {
-        position: "absolute",
-        bottom: 10,
-        right: 70,
-        shadowColor: "black",
-        shadowOffset: { width: 2, height: 2 },
-        shadowOpacity: 0.5,
+    viewBody: {
+        flexDirection: "row",
+        backgroundColor: "#fff",
     },
     text: {
         textAlign: 'center',
@@ -207,14 +271,14 @@ const styles = StyleSheet.create({
 
 function generateLetterId(n) {
     var add = 1, max = 10 - add;
-  
+
     if (n > max) {
         return generateLetterId(max) + generateLetterId(n - max);
     }
-  
+
     max = Math.pow(10, n + add);
     var min = max / 10;
     var number = Math.floor(Math.random() * (max - min + 1)) + min;
-  
+
     return ("" + number).substring(add);
-  }
+}

@@ -1,6 +1,7 @@
-import React from "react";
-import { View, ImageBackground, StyleSheet, TextInput } from "react-native";
-import { Input } from 'react-native-elements';
+import React, { useRef } from "react";
+import { View, ImageBackground, StyleSheet, TextInput, Share } from "react-native";
+import { Input, Icon, Image } from 'react-native-elements';
+import ViewShot from "react-native-view-shot";
 import frameBirthday from '../../../assets/frameBirthday.jpg';
 import { FAB, Portal, Provider } from 'react-native-paper';
 import Toast from "react-native-easy-toast";
@@ -18,8 +19,10 @@ export default function Cat2() {
     const [formData, setFormData] = React.useState(defaultFormValue());
     const [userId, setUserId] = React.useState(false);
     const [state, setState] = React.useState({ open: false });
+    const [figure1, setFigure1] = React.useState(false);
+    const [figure2, setFigure2] = React.useState(false);
     const navigation = useNavigation();
-
+    const viewShotRef = useRef();
     const onStateChange = ({ open }) => setState({ open });
 
     const { open } = state;
@@ -30,16 +33,8 @@ export default function Cat2() {
         }
     });
 
-    const toggleModal = () => {
-        setModalVisible(!isModalVisible);
-    };
-
     const onChange = (e, type) => {
         setFormData({ ...formData, [type]: e.nativeEvent.text });
-    }
-
-    const openModal = () => {
-        setModalVisible(true);
     }
 
     const save = () => {
@@ -75,67 +70,134 @@ export default function Cat2() {
         }
     }
 
+    const addEmoji1 = () => {
+        if (figure1) {
+            setFigure1(false);
+        } else {
+            setFigure1(true);
+        }
+    }
+
+    const addEmoji2 = () => {
+        if (figure2) {
+            setFigure2(false);
+        } else {
+            setFigure2(true);
+        }
+    };
+
+    const captureViewShot = async () => {
+        const imageURI = await viewShotRef.current.capture();
+        Share.share({ title: 'Image', url: imageURI });
+    };
+
+    const sendEmail = async (mail) => {
+        if (isEmpty(mail)) {
+            toastRef.current.show("Debes agregar el correo electrónico de la persona que deseas que reciba tu carta!", 4000);
+        } else if (!validateEmail(mail)) {
+            toastRef.current.show("Email no es correcto.", 4000);
+        } else {
+
+        }
+    };
+
     return (
         <View style={styles.container}>
             <Toast ref={toastRef} position="center" opacity={0.9} />
-            <ImageBackground source={frameBirthday} resizeMode="cover" style={styles.image}>
+            <ViewShot ref={viewShotRef} style={{ flex: 1 }} options={{ format: 'jpg', quality: 1.0 }}>
+                <ImageBackground source={frameBirthday} resizeMode="cover" style={styles.image}>
+                    <Input
+                        onChange={e => onChange(e, "title")}
+                        containerStyle={styles.inputForm}
+                        placeholder='Título'
+                    />
+                    <TextInput
+                        multiline
+                        numberOfLines={10}
+                        onChange={e => onChange(e, 'message')}
+                        style={styles.inputMultiple}
+                        placeholder='Tu mensaje'
+                    />
+
+                    {
+                        figure1 ? (
+                            <Image
+                                source={require("../../../assets/figure1.png")}
+                                style={{ width: 100, height: 100, marginTop: 80, position: "relative" }}
+                            />
+                        ) : (<></>)
+                    }
+
+                    {
+                        figure2 ? (
+                            <Image
+                                source={require("../../../assets/figure2.png")}
+                                style={{ width: 100, height: 100, marginTop: 100, position: "relative", }}
+                            />
+                        ) : (
+                            <>
+                            </>
+                        )
+                    }
+                    <Provider>
+                        <Portal>
+                            <FAB.Group
+                                color={"#FFF"}
+                                fabStyle={{ backgroundColor: "#21ACFC" }}
+                                open={open}
+                                icon={open ? 'close' : 'settings-outline'}
+                                actions={[
+                                    {
+                                        icon: 'mail',
+                                        label: 'Enviar Correo',
+                                        onPress: () => sendEmail(formData.email),
+                                    },
+                                    {
+                                        icon: 'star',
+                                        label: figure1 ? 'Retirar Emoji 1' : 'Colocar Emoji 1',
+                                        onPress: () => addEmoji1(),
+                                    },
+                                    {
+                                        icon: 'text',
+                                        label: figure2 ? 'Retirar Emoji 2' : 'Colocar Emoji 2',
+                                        onPress: () => addEmoji2(),
+                                    },
+                                    {
+                                        icon: 'content-save',
+                                        label: 'Guardar',
+                                        onPress: () => save(),
+                                        small: false,
+                                    },
+                                ]}
+                                onStateChange={onStateChange}
+                                onPress={() => {
+                                    if (open) {
+                                        // do something if the speed dial is open
+                                    }
+                                }}
+                            />
+                        </Portal>
+                    </Provider>
+                </ImageBackground>
+            </ViewShot>
+
+            <View style={styles.viewBody}>
                 <Input
-                    onChange={e => onChange(e, "title")}
-                    containerStyle={styles.inputForm}
-                    placeholder='Título'
-                />
-                <TextInput
-                    multiline
-                    numberOfLines={10}
-                    onChange={e => onChange(e, 'message')}
-                    style={styles.inputMultiple}
-                    placeholder='Tu mensaje'
-                />
-                <Input
-                    placeholder='Email'
+                    placeholder='Para: (Ingresa el email)'
                     onChange={e => onChange(e, "email")}
-                    containerStyle={styles.containerStyleForm}
+                    containerStyle={styles.emailInputForm}
                     labelStyle={styles.labelStyleForm}
+                    inputStyle={styles.inputStyleForm}
                 />
-                <Provider>
-                    <Portal>
-                        <FAB.Group
-                            color={"#FFF"}
-                            fabStyle={{ backgroundColor: "#21ACFC" }}
-                            open={open}
-                            icon={open ? 'close' : 'settings-outline'}
-                            actions={[
-                                {
-                                    icon: 'plus',
-                                    onPress: () => console.log('Pressed add')
-                                },
-                                {
-                                    icon: 'star',
-                                    label: 'Colocar Figúra',
-                                    onPress: () => addSquare(100, 100),
-                                },
-                                {
-                                    icon: 'text',
-                                    label: 'Colocar Texto',
-                                    onPress: () => console.log('Pressed email'),
-                                },
-                                {
-                                    icon: 'content-save',
-                                    label: 'Guardar',
-                                    onPress: () => save(),
-                                    small: false,
-                                },
-                            ]}
-                            onStateChange={onStateChange}
-                            onPress={() => {
-                                if (open) {
-                                    // do something if the speed dial is open
-                                }
-                            }}
-                        />
-                    </Portal>
-                </Provider>
-            </ImageBackground>
+                <Icon
+                    reverse
+                    type="material-community"
+                    name="camera"
+                    color="#21ACFC"
+                    containerStyle={styles.btnContainer}
+                    onPress={captureViewShot}
+                />
+            </View>
         </View>
     );
 }
@@ -164,13 +226,11 @@ const styles = StyleSheet.create({
         marginTop: 10,
         marginLeft: 110,
     },
-    containerStyleForm: {
-        flex: 1,
-        marginTop: 200,
-        padding: 20,
-        width: 300,
-        marginLeft: 60,
-        alignItems: 'center',
+    emailInputForm: {
+        //flex: 1,
+        marginTop: -60,
+        width: 220,
+        marginLeft: 20,
     },
     labelStyleForm: {
         color: '#000',
@@ -194,18 +254,14 @@ const styles = StyleSheet.create({
     btnContainer: {
         position: "absolute",
         bottom: 10,
-        right: 10,
+        right: 80,
         shadowColor: "black",
         shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 0.5,
     },
-    btnContainer2: {
-        position: "absolute",
-        bottom: 10,
-        right: 70,
-        shadowColor: "black",
-        shadowOffset: { width: 2, height: 2 },
-        shadowOpacity: 0.5,
+    viewBody: {
+        flexDirection: "row",
+        backgroundColor: "#fff",
     },
     text: {
         textAlign: 'center',

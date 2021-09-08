@@ -11,7 +11,6 @@ import { useNavigation } from "@react-navigation/native";
 import { firebaseApp } from "../../utils/firebase";
 import firebase from "firebase/app";
 import "firebase/firestore";
-import { lessThan } from "react-native-reanimated";
 
 const db = firebase.firestore(firebaseApp);
 const widthScreen = Dimensions.get("window").width;

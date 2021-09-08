@@ -35,7 +35,7 @@ export default function RegisterForm(props){
                 .createUserWithEmailAndPassword(formData.email, formData.password)
                 .then(responser => {
                     setLoading(false);
-                    navigation.navigate("account");
+                    navigation.navigate("home");
 
                     const data = {
                         idUser: responser.user.uid,
