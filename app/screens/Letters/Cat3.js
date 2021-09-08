@@ -1,8 +1,8 @@
 import React from "react";
-import { View, ImageBackground, StyleSheet, TextInput, Text, Button } from "react-native";
-import { Input, Icon } from 'react-native-elements';
+import { View, ImageBackground, StyleSheet, TextInput } from "react-native";
+import { Input } from 'react-native-elements';
+import { FAB, Portal, Provider } from 'react-native-paper';
 import frameValentin from '../../../assets/frameValentin.jpg';
-import Modal from "react-native-modal";
 import Toast from "react-native-easy-toast";
 import {useNavigation} from "@react-navigation/native";
 import {isEmpty} from 'lodash';
@@ -16,9 +16,13 @@ const db = firebase.firestore(firebaseApp);
 export default function Cat3() {
     const toastRef = React.useRef();
     const [formData, setFormData] = React.useState(defaultFormValue());
-    const [isModalVisible, setModalVisible] = React.useState(false);
     const [userId, setUserId] = React.useState(false);
+    const [state, setState] = React.useState({ open: false });
     const navigation = useNavigation();
+
+    const onStateChange = ({ open }) => setState({ open });
+
+    const { open } = state;
 
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
@@ -26,16 +30,8 @@ export default function Cat3() {
         }
     });
 
-    const toggleModal = () => {
-        setModalVisible(!isModalVisible);
-    };
-
     const onChange = (e, type) => {
         setFormData({ ...formData, [type]: e.nativeEvent.text });
-    }
-
-    const openModal = () => {
-        setModalVisible(true);
     }
 
     const save = () => {
@@ -94,29 +90,44 @@ export default function Cat3() {
                     labelStyle={styles.labelStyleForm}
                     inputStyle={styles.inputStyleForm}
                 />
-                <Icon
-                    reverse
-                    type="material-community"
-                    name="settings-outline"
-                    color="#21ACFC"
-                    containerStyle={styles.btnContainer}
-                    onPress={openModal}
-                />
-                <Icon
-                    reverse
-                    type="material-community"
-                    name="content-save"
-                    color="#21ACFC"
-                    containerStyle={styles.btnContainer2}
-                    onPress={save}
-                />
-                <Modal isVisible={isModalVisible} style={styles.modal}>
-                    <View>
-                        <Text style={styles.text}>Hello!</Text>
-
-                        <Button title="Hide modal" onPress={toggleModal} />
-                    </View>
-                </Modal>
+                <Provider>
+                    <Portal>
+                        <FAB.Group
+                            color={"#FFF"}
+                            fabStyle={{ backgroundColor: "#21ACFC" }}
+                            open={open}
+                            icon={open ? 'close' : 'settings-outline'}
+                            actions={[
+                                {
+                                    icon: 'plus',
+                                    onPress: () => console.log('Pressed add')
+                                },
+                                {
+                                    icon: 'star',
+                                    label: 'Colocar Figúra',
+                                    onPress: () => addSquare(100, 100),
+                                },
+                                {
+                                    icon: 'text',
+                                    label: 'Colocar Texto',
+                                    onPress: () => console.log('Pressed email'),
+                                },
+                                {
+                                    icon: 'content-save',
+                                    label: 'Guardar',
+                                    onPress: () => save(),
+                                    small: false,
+                                },
+                            ]}
+                            onStateChange={onStateChange}
+                            onPress={() => {
+                                if (open) {
+                                    // do something if the speed dial is open
+                                }
+                            }}
+                        />
+                    </Portal>
+                </Provider>
             </ImageBackground>
         </View>
     );
@@ -188,10 +199,6 @@ const styles = StyleSheet.create({
         shadowColor: "black",
         shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 0.5,
-    },
-    modal: {
-        backgroundColor: '#FFF',
-        borderRadius: 20,
     },
     text: {
         textAlign: 'center',

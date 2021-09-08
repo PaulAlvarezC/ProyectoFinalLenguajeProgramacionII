@@ -75,7 +75,7 @@ export default function Home(props) {
       <ScrollView vertical>
         {
           events.map(t =>
-            <Card key={t.letterId}>
+            <Card key={t.id}>
               <Card.Title title={t.name} subtitle={t.description} left={LeftContent} />
               <Card.Cover
                 source={

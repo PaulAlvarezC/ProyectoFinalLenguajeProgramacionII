@@ -1,12 +1,12 @@
 import React from "react";
-import { View, ImageBackground, StyleSheet, TextInput, Text, Button } from "react-native";
-import { Input, Icon } from 'react-native-elements';
-import frameChrismas from '../../../assets/default.png';
-import Modal from "react-native-modal";
+import { View, ImageBackground, StyleSheet, TextInput } from "react-native";
+import { Input } from 'react-native-elements';
+import { FAB, Portal, Provider } from 'react-native-paper';
+import frameChrismas from '../../../assets/cartaDefault.jpeg';
 import Toast from "react-native-easy-toast";
-import {useNavigation} from "@react-navigation/native";
-import {isEmpty} from 'lodash';
-import {fullDate, validateEmail} from '../../utils/validations';
+import { useNavigation } from "@react-navigation/native";
+import { isEmpty } from 'lodash';
+import { fullDate, validateEmail } from '../../utils/validations';
 import { firebaseApp } from "../../utils/firebase";
 import firebase from "firebase/app";
 import "firebase/firestore";
@@ -16,9 +16,13 @@ const db = firebase.firestore(firebaseApp);
 export default function Default() {
     const toastRef = React.useRef();
     const [formData, setFormData] = React.useState(defaultFormValue());
-    const [isModalVisible, setModalVisible] = React.useState(false);
     const [userId, setUserId] = React.useState(false);
+    const [state, setState] = React.useState({ open: false });
     const navigation = useNavigation();
+
+    const onStateChange = ({ open }) => setState({ open });
+
+    const { open } = state;
 
     firebase.auth().onAuthStateChanged((user) => {
         if (user) {
@@ -26,26 +30,18 @@ export default function Default() {
         }
     });
 
-    const toggleModal = () => {
-        setModalVisible(!isModalVisible);
-    };
-
     const onChange = (e, type) => {
         setFormData({ ...formData, [type]: e.nativeEvent.text });
     }
 
-    const openModal = () => {
-        setModalVisible(true);
-    }
-
     const save = () => {
-        if(isEmpty(formData.title)){
+        if (isEmpty(formData.title)) {
             toastRef.current.show("Debes agregar el título de tu carta!", 4000);
-        } else if(isEmpty(formData.message)){
+        } else if (isEmpty(formData.message)) {
             toastRef.current.show("Debes agregar el contenido del mensaje!", 4000);
-        } else if(isEmpty(formData.email)){
+        } else if (isEmpty(formData.email)) {
             toastRef.current.show("Debes agregar el correo electrónico de la persona que deseas que reciba tu carta!", 4000);
-        } else if(!validateEmail(formData.email)){
+        } else if (!validateEmail(formData.email)) {
             toastRef.current.show("Email no es correcto.", 4000);
         } else {
             const letterId = generateLetterId(10);
@@ -59,26 +55,26 @@ export default function Default() {
                 createAt: fullDate(),
             };
             db.collection("letters")
-            .doc(letterId)
-            .set(data)
-            .then(() => {
-                toastRef.current.show("Carta creada correctamente", 4000);
-                navigation.navigate("letters");
-            })
-            .catch(() => {
-                toastRef.current.show("Ups, algo salio mal!");
-            });              
+                .doc(letterId)
+                .set(data)
+                .then(() => {
+                    toastRef.current.show("Carta creada correctamente", 4000);
+                    navigation.navigate("letters");
+                })
+                .catch(() => {
+                    toastRef.current.show("Ups, algo salio mal!");
+                });
         }
-    } 
+    }
 
     return (
         <View style={styles.container}>
-            <Toast ref={toastRef} position="center" opacity={0.9}/>
+            <Toast ref={toastRef} position="center" opacity={0.9} />
             <ImageBackground source={frameChrismas} resizeMode="cover" style={styles.image}>
                 <Input
                     onChange={e => onChange(e, "title")}
                     containerStyle={styles.inputForm}
-                    placeholder='Título'                    
+                    placeholder='Título'
                 />
                 <TextInput
                     multiline
@@ -94,29 +90,45 @@ export default function Default() {
                     labelStyle={styles.labelStyleForm}
                     inputStyle={styles.inputStyleForm}
                 />
-                <Icon
-                    reverse
-                    type="material-community"
-                    name="settings-outline"
-                    color="#21ACFC"
-                    containerStyle={styles.btnContainer}
-                    onPress={openModal}
-                />
-                <Icon
-                    reverse
-                    type="material-community"
-                    name="content-save"
-                    color="#21ACFC"
-                    containerStyle={styles.btnContainer2}
-                    onPress={save}
-                />
-                <Modal isVisible={isModalVisible} style={styles.modal}>
-                    <View>
-                        <Text style={styles.text}>Hello!</Text>
 
-                        <Button title="Hide modal" onPress={toggleModal} />
-                    </View>
-                </Modal>
+                <Provider>
+                    <Portal>
+                        <FAB.Group
+                            color={"#FFF"}
+                            fabStyle={{ backgroundColor: "#21ACFC" }}
+                            open={open}
+                            icon={open ? 'close' : 'settings-outline'}
+                            actions={[
+                                {
+                                    icon: 'plus',
+                                    onPress: () => console.log('Pressed add')
+                                },
+                                {
+                                    icon: 'star',
+                                    label: 'Colocar Figúra',
+                                    onPress: () => addSquare(100, 100),
+                                },
+                                {
+                                    icon: 'text',
+                                    label: 'Colocar Texto',
+                                    onPress: () => console.log('Pressed email'),
+                                },
+                                {
+                                    icon: 'content-save',
+                                    label: 'Guardar',
+                                    onPress: () => save(),
+                                    small: false,
+                                },
+                            ]}
+                            onStateChange={onStateChange}
+                            onPress={() => {
+                                if (open) {
+                                    // do something if the speed dial is open
+                                }
+                            }}
+                        />
+                    </Portal>
+                </Provider>
             </ImageBackground>
         </View>
     );
@@ -141,11 +153,9 @@ const styles = StyleSheet.create({
     },
     inputForm: {
         flex: 1,
-        width: 300,
-        padding: 50,
-        alignItems: 'center',
+        padding: 10,
         marginTop: 10,
-        marginLeft: 50,
+        marginLeft: 10,
     },
     inputFromForm: {
         flex: 1,
@@ -176,11 +186,11 @@ const styles = StyleSheet.create({
     inputMultiple: {
         flex: 30,
         width: 340,
-        marginLeft: 40,
+        marginTop: 60,
+        marginLeft: 20,
         marginRight: 10,
         backgroundColor: 'transparent',
         lineHeight: 28,
-        //backgroundColor: 'red',
     },
     btnContainer: {
         position: "absolute",
@@ -198,10 +208,6 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 2, height: 2 },
         shadowOpacity: 0.5,
     },
-    modal: {
-        backgroundColor: '#FFF',
-        borderRadius: 20,
-    },
     text: {
         textAlign: 'center',
     },
@@ -209,14 +215,14 @@ const styles = StyleSheet.create({
 
 function generateLetterId(n) {
     var add = 1, max = 10 - add;
-  
+
     if (n > max) {
         return generateLetterId(max) + generateLetterId(n - max);
     }
-  
+
     max = Math.pow(10, n + add);
     var min = max / 10;
     var number = Math.floor(Math.random() * (max - min + 1)) + min;
-  
+
     return ("" + number).substring(add);
-  }
+}

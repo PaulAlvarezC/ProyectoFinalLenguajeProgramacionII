@@ -1,8 +1,6 @@
 import React from "react";
 import { View, ImageBackground, StyleSheet, TextInput } from "react-native";
 import { Input } from 'react-native-elements';
-//import Animated, { useAnimatedGestureHandler, useAnimatedStyle, useSharedValue } from "react-native-reanimated";
-//import {PanGestureHandler,PanGestureHandlerGestureEvent,} from 'react-native-gesture-handler';
 import { FAB, Portal, Provider } from 'react-native-paper';
 import frameChrismas from '../../../assets/frameChrismas.jpg';
 import Toast from "react-native-easy-toast";
@@ -18,7 +16,6 @@ const db = firebase.firestore(firebaseApp);
 export default function Cat1() {
     const toastRef = React.useRef();
     const [formData, setFormData] = React.useState(defaultFormValue());
-    const [isModalVisible, setModalVisible] = React.useState(false);
     const [userId, setUserId] = React.useState(false);
     const navigation = useNavigation();
     const [state, setState] = React.useState({ open: false });
@@ -33,48 +30,13 @@ export default function Cat1() {
         }
     });
 
-    //const translateX = useSharedValue(0);
-    //const translateY = useSharedValue(0);
-
-    /*const panGestureEvent = useAnimatedGestureHandler < PanGestureHandlerGestureEvent > ({
-        onStart: (event) => {
-            //context.translateX = translateX.value
-        },
-        onActive: (event) => {
-            translateX.value = event.translationX;
-            translateY.value = event.translationY;
-        },
-        onEnd: (event) => { },
-    })*/
-
-    const toggleModal = () => {
-        setModalVisible(!isModalVisible);
-    };
-
     const onChange = (e, type) => {
         setFormData({ ...formData, [type]: e.nativeEvent.text });
-    }
-
-    const openModal = () => {
-        setModalVisible(true);
     }
 
     const addSquare = (x, y) => {
         console.log('Add Square: ', x, y);
     }
-
-    /*const rStyle = useAnimatedStyle(() => {
-        return {
-            transform: [
-                {
-                    translateX: translateX.value,
-                },
-                {
-                    translateY: translateY.value,
-                },
-            ],
-        };
-    });*/
 
     const save = () => {
         if (isEmpty(formData.title)) {
@@ -132,11 +94,6 @@ export default function Cat1() {
                     labelStyle={styles.labelStyleForm}
                     inputStyle={styles.inputStyleForm}
                 />
-
-                {/*<PanGestureHandler onGestureEvent={panGestureEvent}>
-                    <Animated.View style={[styles.square, rStyle]} />
-                </PanGestureHandler>*/}
-
 
                 <Provider>
                     <Portal>

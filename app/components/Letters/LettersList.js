@@ -73,7 +73,7 @@ export default function LettersList(props) {
     }
 
     const showLetter = (id) => {
-        console.log('Abrir Carta ', id);
+        navigation.navigate('letterById',{letterById:id});
     }
 
     const showDialog = (id) => {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text } from "react-native";
+import { ScrollView, View, Text } from "react-native";
 import { Icon, Button } from "react-native-elements";
 import firebase from "firebase";
 import LettersList from '../../components/Letters/LettersList';
@@ -21,9 +21,9 @@ export default function Letters(props){
     }
 
     return(
-        <View>
+        <ScrollView vertical>
             <LettersList userId={userId}/>
-        </View>
+        </ScrollView>
     );
 }
 

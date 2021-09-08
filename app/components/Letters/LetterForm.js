@@ -3,7 +3,7 @@ import { StyleSheet, View, Dimensions, Alert } from "react-native";
 import *  as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
 import { Input, Icon, Button, Avatar, Image } from "react-native-elements";
-import { fullDate } from "../../utils/validations";
+import { fullDate, generateRandomId } from "../../utils/validations";
 import Loading from "../Loading";
 import uuid from "random-uuid-v4";
 import { size, isEmpty, map, filter } from "lodash";
@@ -11,6 +11,7 @@ import { useNavigation } from "@react-navigation/native";
 import { firebaseApp } from "../../utils/firebase";
 import firebase from "firebase/app";
 import "firebase/firestore";
+import { lessThan } from "react-native-reanimated";
 
 const db = firebase.firestore(firebaseApp);
 const widthScreen = Dimensions.get("window").width;
@@ -29,10 +30,12 @@ export default function LetterForm(props) {
         } else if(size(imagesSelected) === 0){
             toastRef.current.show("El evento debe tener una imagen.");
         } else {
+            const id = generateRandomId(8);
             setLoading(true);
             uploadImageStorage().then(response => {
                 db.collection("event")
                 .add({
+                    id: id,
                     name: formData.name,
                     description: formData.description,
                     image: response,
