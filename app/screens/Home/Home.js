@@ -59,9 +59,7 @@ export default function Home(props) {
     user ? setUserLogged(true) : setUserLogged(false);
   });
 
-  if (!userLogged) {
-    return <UserNoLogged navigation={navigation} />;
-  }
+  
 
   const goCreate = () => {
     navigation.navigate('create', {
@@ -71,67 +69,150 @@ export default function Home(props) {
 
   return (
     <>
-    <Text style={{ margin: 5, padding: 5, }}>Personalizadas: {totalEvents}</Text>
+    <Text style={{ margin: 5, padding: 5, }}>Personalizadas: { userLogged ? totalEvents : 0}</Text>
       <ScrollView vertical>
         {
-          events.map(t =>
-            <Card key={t.id}>
-              <Card.Title title={t.name} subtitle={t.description} left={LeftContent} />
-              <Card.Cover
-                source={
-                  { uri: t.image[0] }
-                }
-              />
-              <Card.Actions>
-                <Button onPress={goCatDefault}>Crear</Button>
-              </Card.Actions>
-            </Card>
+          userLogged ? (
+            <>
+            {
+              events.map(t =>
+                <Card key={t.id} style={{marginTop: 20,}}>
+                  <Card.Title title={t.name} subtitle={t.description} left={LeftContent} style={{fontSize: 18,}}/>
+                  <Card.Cover
+                    source={
+                      { uri: t.image[0] }
+                    }
+                  />
+                  <Card.Actions>
+                    <Button onPress={goCatDefault}>Crear</Button>
+                  </Card.Actions>
+                </Card>
+              )
+            }
+              <Card key="1" style={{marginTop: 20,}}>
+                <Card.Title title="Navidad" subtitle="" left={LeftContent} style={{fontSize: 18,}} />
+                <Card.Content>
+                  <Paragraph style={{fontSize: 18,}}>Escribele a Santa y dile como te has portado.</Paragraph>
+                </Card.Content>
+                <Card.Cover source={require('../../../assets/navidad.jpg')} />
+                <Card.Actions>
+                  {
+                    userLogged ? (
+                      <Button onPress={goCat1}>Crear</Button>
+                    ) : (
+                      <Text style={{fontSize: 18,}}>Necesitas estar logueado para poder crear una carta!</Text>
+                    )
+                  }
+                </Card.Actions>
+              </Card>
+              
+              <Card key="2" style={{marginTop: 20,}}>
+                <Card.Title title="Cumpleaños" subtitle="" left={LeftContent} style={{fontSize: 18,}} />
+                <Card.Content>
+                  <Paragraph style={{fontSize: 18,}}>Escribe y envia tus mejores deseos a un familiar o amigo por su cumpleaños.</Paragraph>
+                </Card.Content>
+                <Card.Cover source={require('../../../assets/cumpleanos.jpg')} />
+                <Card.Actions>
+                  {
+                    userLogged ? (
+                      <Button onPress={goCat2}>Crear</Button>
+                    ) : (
+                      <Text style={{fontSize: 18,}}>Necesitas estar logueado para poder crear una carta!</Text>
+                    )
+                  }
+                </Card.Actions>
+              </Card>
+
+              <Card key="3" style={{marginTop: 20,}}>
+                <Card.Title title="San Valentin" subtitle="" left={LeftContent} style={{fontSize: 18,}} />
+                <Card.Content>
+                  <Paragraph style={{fontSize: 18,}}>Expresa tu amor a tu crush a traves de una carta!</Paragraph>
+                </Card.Content>
+                <Card.Cover source={require('../../../assets/sanvalentin.jpg')} />
+                <Card.Actions>
+                  {
+                    userLogged ? (
+                      <Button onPress={goCat3}>Crear</Button>
+                    ) : (
+                      <Text style={{fontSize: 18,}}>Necesitas estar logueado para poder crear una carta!</Text>
+                    )
+                  }
+                </Card.Actions>
+              </Card>
+            </>
+          ) : (
+            <>
+              <Card key="1" style={{marginTop: 20,}}>
+                <Card.Title title="Navidad" subtitle="" left={LeftContent} style={{fontSize: 18,}} />
+                <Card.Content>
+                  <Paragraph style={{fontSize: 18,}}>Escribele a Santa y dile como te has portado.</Paragraph>
+                </Card.Content>
+                <Card.Cover source={require('../../../assets/navidad.jpg')} />
+                <Card.Actions>
+                  {
+                    userLogged ? (
+                      <Button onPress={goCat1}>Crear</Button>
+                    ) : (
+                      <Text style={{fontSize: 18,}}>Necesitas estar logueado para poder crear una carta!</Text>
+                    )
+                  }
+                </Card.Actions>
+              </Card>
+              
+              <Card key="2" style={{marginTop: 20,}}>
+                <Card.Title title="Cumpleaños" subtitle="" left={LeftContent} style={{fontSize: 18,}} />
+                <Card.Content>
+                  <Paragraph style={{fontSize: 18,}}>Escribe y envia tus mejores deseos a un familiar o amigo por su cumpleaños.</Paragraph>
+                </Card.Content>
+                <Card.Cover source={require('../../../assets/cumpleanos.jpg')} />
+                <Card.Actions>
+                  {
+                    userLogged ? (
+                      <Button onPress={goCat2}>Crear</Button>
+                    ) : (
+                      <Text style={{fontSize: 18,}}>Necesitas estar logueado para poder crear una carta!</Text>
+                    )
+                  }
+                </Card.Actions>
+              </Card>
+
+              <Card key="3" style={{marginTop: 20,}}>
+                <Card.Title title="San Valentin" subtitle="" left={LeftContent} style={{fontSize: 18,}} />
+                <Card.Content>
+                  <Paragraph style={{fontSize: 18,}}>Expresa tu amor a tu crush a traves de una carta!</Paragraph>
+                </Card.Content>
+                <Card.Cover source={require('../../../assets/sanvalentin.jpg')} />
+                <Card.Actions>
+                  {
+                    userLogged ? (
+                      <Button onPress={goCat3}>Crear</Button>
+                    ) : (
+                      <Text style={{fontSize: 18,}}>Necesitas estar logueado para poder crear una carta!</Text>
+                    )
+                  }
+                </Card.Actions>
+              </Card>
+            </>
           )
         }
 
-        <Card key="1">
-          <Card.Title title="Navidad" subtitle="" left={LeftContent} />
-          <Card.Content>
-            <Paragraph>Escribele a Santa y dile como te has portado.</Paragraph>
-          </Card.Content>
-          <Card.Cover source={require('../../../assets/navidad.jpg')} />
-          <Card.Actions>
-            <Button onPress={goCat1}>Crear</Button>
-          </Card.Actions>
-        </Card>
-
-        <Card key="2">
-          <Card.Title title="Cumpleaños" subtitle="" left={LeftContent} />
-          <Card.Content>
-            <Paragraph>Escribe y envia tus mejores deseos a un familiar o amigo por su cumpleaños.</Paragraph>
-          </Card.Content>
-          <Card.Cover source={require('../../../assets/cumpleanos.jpg')} />
-          <Card.Actions>
-            <Button onPress={goCat2}>Crear</Button>
-          </Card.Actions>
-        </Card>
-
-        <Card key="3">
-          <Card.Title title="San Valentin" subtitle="" left={LeftContent} />
-          <Card.Content>
-            <Paragraph>Expresa tu amor a tu crush a traves de una carta!</Paragraph>
-          </Card.Content>
-          <Card.Cover source={require('../../../assets/sanvalentin.jpg')} />
-          <Card.Actions>
-            <Button onPress={goCat3}>Crear</Button>
-          </Card.Actions>
-        </Card>
       </ScrollView>
-      <View style={styles.viewBody}>
-        <Icon
-          reverse
-          type="material-community"
-          name="plus"
-          color="#21ACFC"
-          containerStyle={styles.btnContainer}
-          onPress={goCreate}
-        />
-      </View>
+      {
+        userLogged ? (
+          <View style={styles.viewBody}>
+            <Icon
+              reverse
+              type="material-community"
+              name="plus"
+              color="#21ACFC"
+              containerStyle={styles.btnContainer}
+              onPress={goCreate}
+            />
+          </View>
+        ) : (
+          <></>
+        )
+      }
     </>
   );
 }
